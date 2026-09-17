@@ -1,3 +1,306 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#02050e"><title>Una galaxia para Magali</title><meta name="description" content="Una galaxia interactiva de flores amarillas para Magali."><style>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;600&display=swap');*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#02050e;color:white;font-family:Montserrat,sans-serif}#galaxy{position:fixed;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}#galaxy:active{cursor:grabbing}.intro{position:fixed;z-index:10;inset:0;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 48%,rgba(18,48,104,.68),rgba(2,5,14,.96) 68%);transition:opacity 1s,visibility 1s}.intro.away{opacity:0;visibility:hidden}.card{text-align:center;max-width:640px}.overline{font-size:.74rem;letter-spacing:.25em;text-transform:uppercase;color:#ffe384}.card h1{font:700 clamp(4.2rem,17vw,8.4rem)/.86 'Cormorant Garamond',serif;margin:.16em 0;color:#fff7d1;text-shadow:0 0 45px rgba(255,214,55,.35)}.card p{line-height:1.8;color:#e8eaf3;max-width:540px;margin:20px auto 30px}.enter{border:1px solid #ffe579;background:linear-gradient(135deg,#ffe46c,#eeb12d);color:#281600;border-radius:999px;padding:15px 27px;font-weight:700;cursor:pointer;box-shadow:0 13px 48px rgba(255,210,64,.22)}.ui{position:fixed;z-index:5;inset:0;pointer-events:none}.title{position:absolute;top:max(20px,env(safe-area-inset-top));left:24px}.title small{display:block;color:#ffe887;letter-spacing:.18em;text-transform:uppercase;font-size:.66rem}.title strong{font:700 2rem 'Cormorant Garamond',serif}.hint{position:absolute;left:50%;bottom:max(28px,env(safe-area-inset-bottom));transform:translate(-50%,18px);background:rgba(4,9,24,.64);border:1px solid rgba(255,229,125,.3);backdrop-filter:blur(14px);padding:11px 17px;border-radius:999px;font-size:.75rem;opacity:0;transition:.5s;text-align:center;white-space:nowrap}.hint.show{opacity:1;transform:translate(-50%,0)}.music{position:absolute;right:18px;top:max(18px,env(safe-area-inset-top));pointer-events:auto;border:1px solid rgba(255,232,140,.35);background:rgba(4,9,24,.68);color:#fff3bd;border-radius:999px;padding:10px 14px;backdrop-filter:blur(14px);cursor:pointer}.message{width:min(540px,calc(100% - 34px));border:1px solid rgba(255,230,125,.38);border-radius:30px;padding:0;background:rgba(4,9,24,.91);color:white;box-shadow:0 28px 110px rgba(0,0,0,.65);backdrop-filter:blur(22px)}.message::backdrop{background:rgba(1,3,10,.53);backdrop-filter:blur(5px)}.message-inner{text-align:center;padding:42px 32px 34px}.flower-mark{color:#ffdf4d;font-size:2rem}.message h2{font:700 clamp(2.1rem,8vw,3.8rem)/1 'Cormorant Garamond',serif;color:#fff3bd;margin:.3em 0}.message p{line-height:1.85;color:#e7e9f3;margin:0 auto 26px}.close{border:0;background:#f6c945;color:#2b1900;border-radius:999px;padding:11px 22px;font-weight:700;cursor:pointer}.burst{position:fixed;z-index:20;pointer-events:none;color:#ffe45c;text-shadow:0 0 13px #ffd540;animation:burst 1.15s ease-out forwards}@keyframes burst{to{transform:translate(var(--x),var(--y)) scale(.2) rotate(160deg);opacity:0}}@media(max-width:540px){.title{left:16px}.title strong{font-size:1.55rem}.card p{font-size:.93rem}.message-inner{padding:35px 24px 28px}}@media(prefers-reduced-motion:reduce){.intro{transition:none}.burst{display:none}}
-</style><style>.zoom-controls{position:absolute;right:18px;bottom:max(24px,env(safe-area-inset-bottom));display:grid;gap:8px;pointer-events:auto}.zoom-controls button{width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,232,140,.42);background:rgba(4,9,24,.72);color:#fff3bd;font-size:1.55rem;line-height:1;backdrop-filter:blur(14px);cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,.18)}.zoom-controls button:active{transform:scale(.93)}</style></head><body><canvas id="galaxy" aria-label="Galaxia interactiva. Arrastra para girarla, usa dos dedos para acercarla y toca una flor para leer su mensaje."></canvas><section class="intro" id="intro"><div class="card"><div class="overline">Un universo hecho para ti</div><h1>Magali</h1><p>Gira esta galaxia con tu dedo o cursor. Acércala para explorar rosas, girasoles, tulipanes, margaritas y ramos; toca cada uno para descubrir lo que guarda.</p><button class="enter" id="enter">Entrar a tu galaxia ✦</button></div></section><div class="ui"><div class="title"><small>Galaxia de flores</small><strong>Para Magali</strong></div><div class="hint" id="hint">Arrastra · Pellizca para acercar · Toca una flor</div><button class="music" id="music" hidden aria-pressed="true">♫ Pausar</button><div class="zoom-controls"><button id="zoom-in" aria-label="Acercar galaxia">＋</button><button id="zoom-out" aria-label="Alejar galaxia">−</button></div></div><dialog class="message" id="message"><div class="message-inner"><div class="flower-mark">✦</div><h2 id="message-title"></h2><p id="message-text"></p><button class="close" id="close-message">Seguir explorando</button></div></dialog><script>window.GIFT_CONFIG={name:'Magali',accent:'#ffe36d',glow:'#ffd63f',flower:'#ffd83f',flower2:'#fff08b',center:'#75420c',dust:'#aecbff',bgCenter:'#173b75',bgMid:'#07152f',bgEdge:'#01030a',core:'rgba(255,225,95,.7)',coreSoft:'rgba(77,133,231,.18)',messages:[{title:'Tu luz',text:'Tienes una forma muy especial de iluminar los días, incluso cuando no te das cuenta. Tu presencia hace que todo se sienta un poco más bonito.'},{title:'Tu sonrisa',text:'Ojalá nunca falten motivos para verte sonreír. Esa sonrisa tuya puede convertir un momento sencillo en un recuerdo inolvidable.'},{title:'Lo que mereces',text:'Mereces cariño sincero, tranquilidad, aventuras bonitas y personas que sepan cuidar el corazón tan especial que tienes.'},{title:'Tu manera de ser',text:'No cambies esa forma tan tuya de sentir, de querer y de estar para los demás. Tu esencia es una de tus cosas más hermosas.'},{title:'Cuando dudes',text:'Si alguna vez dudas de ti, recuerda todo lo que has superado. Eres mucho más fuerte, valiente y brillante de lo que imaginas.'},{title:'Un deseo para ti',text:'Que la vida te regrese multiplicada toda la alegría, la ternura y la luz que compartes con quienes tienen la suerte de conocerte.'},{title:'Entre tantas estrellas',text:'Si tuviera que elegir un rincón bonito del universo, elegiría cualquiera en el que estuvieras tú.'},{title:'Para Magali',text:'Este pequeño universo existe para recordarte algo sencillo: eres importante, eres especial y mereces sentirte muy querida.'}]};</script><script src="galaxy.js"></script></body></html>
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+    <meta name="theme-color" content="#02050e">
+    <title>Una galaxia para Magali</title>
+    <meta name="description" content="Una galaxia interactiva de flores amarillas para Magali.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;600&display=swap');
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: #02050e;
+            color: white;
+            font-family: Montserrat, sans-serif
+        }
+
+        #galaxy {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            cursor: grab
+        }
+
+        #galaxy:active {
+            cursor: grabbing
+        }
+
+        .intro {
+            position: fixed;
+            z-index: 10;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            background: radial-gradient(circle at 50% 48%, rgba(18, 48, 104, .68), rgba(2, 5, 14, .96) 68%);
+            transition: opacity 1s, visibility 1s
+        }
+
+        .intro.away {
+            opacity: 0;
+            visibility: hidden
+        }
+
+        .card {
+            text-align: center;
+            max-width: 640px
+        }
+
+        .overline {
+            font-size: .74rem;
+            letter-spacing: .25em;
+            text-transform: uppercase;
+            color: #ffe384
+        }
+
+        .card h1 {
+            font: 700 clamp(4.2rem, 17vw, 8.4rem)/.86 'Cormorant Garamond', serif;
+            margin: .16em 0;
+            color: #fff7d1;
+            text-shadow: 0 0 45px rgba(255, 214, 55, .35)
+        }
+
+        .card p {
+            line-height: 1.8;
+            color: #e8eaf3;
+            max-width: 540px;
+            margin: 20px auto 30px
+        }
+
+        .enter {
+            border: 1px solid #ffe579;
+            background: linear-gradient(135deg, #ffe46c, #eeb12d);
+            color: #281600;
+            border-radius: 999px;
+            padding: 15px 27px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 13px 48px rgba(255, 210, 64, .22)
+        }
+
+        .ui {
+            position: fixed;
+            z-index: 5;
+            inset: 0;
+            pointer-events: none
+        }
+
+        .title {
+            position: absolute;
+            top: max(20px, env(safe-area-inset-top));
+            left: 24px
+        }
+
+        .title small {
+            display: block;
+            color: #ffe887;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            font-size: .66rem
+        }
+
+        .title strong {
+            font: 700 2rem 'Cormorant Garamond', serif
+        }
+
+        .hint {
+            position: absolute;
+            left: 50%;
+            bottom: max(28px, env(safe-area-inset-bottom));
+            transform: translate(-50%, 18px);
+            background: rgba(4, 9, 24, .64);
+            border: 1px solid rgba(255, 229, 125, .3);
+            backdrop-filter: blur(14px);
+            padding: 11px 17px;
+            border-radius: 999px;
+            font-size: .75rem;
+            opacity: 0;
+            transition: .5s;
+            text-align: center;
+            white-space: nowrap
+        }
+
+        .hint.show {
+            opacity: 1;
+            transform: translate(-50%, 0)
+        }
+
+        .music {
+            position: absolute;
+            right: 18px;
+            top: max(18px, env(safe-area-inset-top));
+            pointer-events: auto;
+            border: 1px solid rgba(255, 232, 140, .35);
+            background: rgba(4, 9, 24, .68);
+            color: #fff3bd;
+            border-radius: 999px;
+            padding: 10px 14px;
+            backdrop-filter: blur(14px);
+            cursor: pointer
+        }
+
+        .message {
+            width: min(540px, calc(100% - 34px));
+            border: 1px solid rgba(255, 230, 125, .38);
+            border-radius: 30px;
+            padding: 0;
+            background: rgba(4, 9, 24, .91);
+            color: white;
+            box-shadow: 0 28px 110px rgba(0, 0, 0, .65);
+            backdrop-filter: blur(22px)
+        }
+
+        .message::backdrop {
+            background: rgba(1, 3, 10, .53);
+            backdrop-filter: blur(5px)
+        }
+
+        .message-inner {
+            text-align: center;
+            padding: 42px 32px 34px
+        }
+
+        .flower-mark {
+            color: #ffdf4d;
+            font-size: 2rem
+        }
+
+        .message h2 {
+            font: 700 clamp(2.1rem, 8vw, 3.8rem)/1 'Cormorant Garamond', serif;
+            color: #fff3bd;
+            margin: .3em 0
+        }
+
+        .message p {
+            line-height: 1.85;
+            color: #e7e9f3;
+            margin: 0 auto 26px
+        }
+
+        .close {
+            border: 0;
+            background: #f6c945;
+            color: #2b1900;
+            border-radius: 999px;
+            padding: 11px 22px;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        .burst {
+            position: fixed;
+            z-index: 20;
+            pointer-events: none;
+            color: #ffe45c;
+            text-shadow: 0 0 13px #ffd540;
+            animation: burst 1.15s ease-out forwards
+        }
+
+        @keyframes burst {
+            to {
+                transform: translate(var(--x), var(--y)) scale(.2) rotate(160deg);
+                opacity: 0
+            }
+        }
+
+        @media(max-width:540px) {
+            .title {
+                left: 16px
+            }
+
+            .title strong {
+                font-size: 1.55rem
+            }
+
+            .card p {
+                font-size: .93rem
+            }
+
+            .message-inner {
+                padding: 35px 24px 28px
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            .intro {
+                transition: none
+            }
+
+            .burst {
+                display: none
+            }
+        }
+    </style>
+    <style>
+        .zoom-controls {
+            position: absolute;
+            right: 18px;
+            bottom: max(24px, env(safe-area-inset-bottom));
+            display: grid;
+            gap: 8px;
+            pointer-events: auto
+        }
+
+        .zoom-controls button {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 232, 140, .42);
+            background: rgba(4, 9, 24, .72);
+            color: #fff3bd;
+            font-size: 1.55rem;
+            line-height: 1;
+            backdrop-filter: blur(14px);
+            cursor: pointer;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .18)
+        }
+
+        .zoom-controls button:active {
+            transform: scale(.93)
+        }
+    </style>
+</head>
+
+<body><canvas id="galaxy"
+        aria-label="Galaxia interactiva. Arrastra para girarla, usa dos dedos para acercarla y toca una flor para leer su mensaje."></canvas>
+    <section class="intro" id="intro">
+        <div class="card">
+            <div class="overline">Un universo hecho para ti</div>
+            <h1>Magali</h1>
+            <p>Gira esta galaxia con tu dedo o cursor. Acércala para explorar rosas, girasoles, tulipanes, margaritas y
+                ramos; toca cada uno para descubrir lo que guarda.</p><button class="enter" id="enter">Entrar a tu
+                galaxia ✦</button>
+        </div>
+    </section>
+    <div class="ui">
+        <div class="title"><small>Galaxia de flores</small><strong>Para Magali</strong></div>
+        <div class="hint" id="hint">Arrastra · Pellizca para acercar · Toca una flor</div><button class="music"
+            id="music" hidden aria-pressed="true">♫ Pausar</button>
+        <div class="zoom-controls"><button id="zoom-in" aria-label="Acercar galaxia">＋</button><button id="zoom-out"
+                aria-label="Alejar galaxia">−</button></div>
+    </div>
+    <dialog class="message" id="message">
+        <div class="message-inner">
+            <div class="flower-mark">✦</div>
+            <h2 id="message-title"></h2>
+            <p id="message-text"></p><button class="close" id="close-message">Seguir explorando</button>
+        </div>
+    </dialog>
+    <script>window.GIFT_CONFIG = { name: 'Magali', accent: '#ffe36d', glow: '#ffd63f', flower: '#ffd83f', flower2: '#fff08b', center: '#75420c', dust: '#aecbff', bgCenter: '#173b75', bgMid: '#07152f', bgEdge: '#01030a', core: 'rgba(255,225,95,.7)', coreSoft: 'rgba(77,133,231,.18)', messages: [{ title: 'Tu luz', text: 'Tienes una forma muy especial de iluminar los días, incluso cuando no te das cuenta. Tu presencia hace que todo se sienta un poco más bonito.' }, { title: 'Tu sonrisa', text: 'Ojalá nunca falten motivos para verte sonreír. Esa sonrisa tuya puede convertir un momento sencillo en un recuerdo inolvidable.' }, { title: 'Lo que mereces', text: 'Mereces cariño sincero, tranquilidad, aventuras bonitas y personas que sepan cuidar el corazón tan especial que tienes.' }, { title: 'Tu manera de ser', text: 'No cambies esa forma tan tuya de sentir, de querer y de estar para los demás. Tu esencia es una de tus cosas más hermosas.' }, { title: 'Cuando dudes', text: 'Si alguna vez dudas de ti, recuerda todo lo que has superado. Eres mucho más fuerte, valiente y brillante de lo que imaginas.' }, { title: 'Un deseo para ti', text: 'Que la vida te regrese multiplicada toda la alegría, la ternura y la luz que compartes con quienes tienen la suerte de conocerte.' }, { title: 'Entre tantas estrellas', text: 'Si tuviera que elegir un rincón bonito del universo, elegiría cualquiera en el que estuvieras tú.' }, { title: 'Para Magali', text: 'Este pequeño universo existe para recordarte algo sencillo: eres importante, eres especial y mereces sentirte muy querida.' }] };</script>
+    <script src="galaxy.js"></script>
+</body>
+
+</html>
